@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.background {
+    background-image: url('/build/assets/images/second.jpg');
+    background-position: center;
+    background-size: cover;
+}
+
+.finger-paint-regular {
+    font-family: "Finger Paint", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.turn {
+    background-color: #48bb78;
+}
+
+.bg {
+    background-color: rgba(0, 0, 0, 0.438);
+
+}

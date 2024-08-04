@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tic Tac Toe</title>
+    <link href="/build/css/style.css" rel="stylesheet" />
+    <link rel="icon" href="/build/assets/images/1.ico" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Finger+Paint&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="background overflow-hidden">
+    <header class="w-full">
+      <nav class="flex -mt-4">
+        <img
+          class="w-24 h-24 -mr-4"
+          src="/build/assets/images/tic_tac_toe.ico"
+          alt="tic_tac_toe"
+        />
+        <h1 class="pt-7 font-bold text-3xl text-white">Gridlock</h1>
+      </nav>
+    </header>
+    <main class="flex justify-center h-vh -mt-10">
+      <div class="text-center finger-paint-regular">
+        <h1 class="text-4xl font-bold mb-7 finger-paint-regular">
+          Tic Tac Toe
+        </h1>
+        <div id="mode-select" class="">
+          <button
+            id="player-vs-player"
+            class="bg-blue-900 border-2 border-blue-900 active:shadow-xl active:shadow-blue-900 text-white px-4 py-2 m-2 rounded-md hover:bg-transparent hover:border-2 hover:ease-in-out hover:duration-500"
+          >
+            2 Player Mode
+          </button>
+          <button
+            id="player-vs-ai"
+            class="bg-green-600 border-2 border-green-600 active:shadow-xl active:shadow-green-600 text-white px-4 py-2 m-2 rounded-md hover:bg-transparent hover:border-2 hover:ease-in-out hover:duration-500"
+          >
+            Play vs AI
+          </button>
+        </div>
+        <div class="turn-container mb-4">
+          <h3 class="">Turn For</h3>
+          <div class="flex justify-center">
+            <div class="turn-box w-16 border-2 mx-2 rounded-md">X</div>
+            <div class="turn-box w-16 border-2 mx-2 rounded-md">O</div>
+          </div>
+        </div>
+        <div
+          id="board"
+          class="grid grid-cols-3 gap-2 w-64 text-green-700 mx-auto"
+        >
+          <div
+            class="cell w-20 h-20 rounded-lg bg-white hover:bg-opacity-60 hover:ease-in-out hover:duration-300 flex justify-center items-center text-6xl cursor-pointer"
+            data-index="0"
+          ></div>
+          <div
+            class="cell w-20 h-20 rounded-lg bg-white hover:bg-opacity-60 hover:ease-in-out hover:duration-300 flex justify-center items-center text-6xl cursor-pointer"
+            data-index="1"
+          ></div>
+          <div
+            class="cell w-20 h-20 rounded-lg bg-white hover:bg-opacity-60 hover:ease-in-out hover:duration-300 flex justify-center items-center text-6xl cursor-pointer"
+            data-index="2"
+          ></div>
+          <div
+            class="cell w-20 h-20 rounded-lg bg-white hover:bg-opacity-60 hover:ease-in-out hover:duration-300 flex justify-center items-center text-6xl cursor-pointer"
+            data-index="3"
+          ></div>
+          <div
+            class="cell w-20 h-20 rounded-lg bg-white hover:bg-opacity-60 hover:ease-in-out hover:duration-300 flex justify-center items-center text-6xl cursor-pointer"
+            data-index="4"
+          ></div>
+          <div
+            class="cell w-20 h-20 rounded-lg bg-white hover:bg-opacity-60 hover:ease-in-out hover:duration-300 flex justify-center items-center text-6xl cursor-pointer"
+            data-index="5"
+          ></div>
+          <div
+            class="cell w-20 h-20 rounded-lg bg-white hover:bg-opacity-60 hover:ease-in-out hover:duration-300 flex justify-center items-center text-6xl cursor-pointer"
+            data-index="6"
+          ></div>
+          <div
+            class="cell w-20 h-20 rounded-lg bg-white hover:bg-opacity-60 hover:ease-in-out hover:duration-300 flex justify-center items-center text-6xl cursor-pointer"
+            data-index="7"
+          ></div>
+          <div
+            class="cell w-20 h-20 rounded-lg bg-white hover:bg-opacity-60 hover:ease-in-out hover:duration-300 flex justify-center items-center text-6xl cursor-pointer"
+            data-index="8"
+          ></div>
+        </div>
+        <button
+          id="restart"
+          class="bg-red-600 border-2 border-red-600 active:shadow-xl active:shadow-red-600 text-white px-4 py-2 m-2 mb-0 rounded-md hover:bg-transparent hover:border-2 hover:ease-in-out hover:duration-500"
+        >
+          Restart
+        </button>
+        <div class="h-3">
+          <h2 id="result" class="text-green-700 text-2xl"></h2>
+        </div>
+      </div>
+    </main>
+    <p class="text-center mt-5">
+      Copyright &copy; 2024 Gridlock&reg;. All rights reserved.
+    </p>
+    <script src="/script.js"></script>
+  </body>
+</html>
