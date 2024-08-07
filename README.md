@@ -42,5 +42,5 @@ To run the game locally on your machine, follow these steps:
 ## Technologies Used
 
 - **HTML5**: For structuring the web page.
-- **CSS3**: For styling the game.
+- **Tailwind css**: For styling the game.
 - **JavaScript**: For game logic and interactivity.
