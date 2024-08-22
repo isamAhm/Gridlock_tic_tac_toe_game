@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const playerVsAiButton = document.getElementById("player-vs-ai");
   const resultDisplay = document.getElementById("result");
   const turnBoxes = document.querySelectorAll(".turn-box");
+  const trainingMessage = document.getElementById("training-message");
 
   let isPlayerVsAI = false;
   let currentPlayer = "x";
@@ -21,6 +22,57 @@ document.addEventListener("DOMContentLoaded", () => {
     [0, 4, 8],
     [2, 4, 6],
   ];
+
+  let qTable = {};
+  const alpha = 0.2;
+  const gamma = 0.9;
+  let epsilon = 0.4;
+
+  function getStateKey(state) {
+    return state.join("");
+  }
+
+  function getBestMove(state, player) {
+    const stateKey = getStateKey(state);
+    if (!qTable[stateKey]) {
+      qTable[stateKey] = Array(9).fill(0);
+    }
+
+    if (Math.random() < epsilon) {
+      let availableMoves = [];
+      state.forEach((cell, idx) => {
+        if (cell === "") availableMoves.push(idx);
+      });
+      return availableMoves[Math.floor(Math.random() * availableMoves.length)];
+    } else {
+      let maxQValue = -Infinity;
+      let bestMove = 0;
+      for (let i = 0; i < 9; i++) {
+        if (state[i] === "" && qTable[stateKey][i] > maxQValue) {
+          maxQValue = qTable[stateKey][i];
+          bestMove = i;
+        }
+      }
+      return bestMove;
+    }
+  }
+
+  function updateQTable(prevState, action, reward, nextState) {
+    const prevStateKey = getStateKey(prevState);
+    const nextStateKey = getStateKey(nextState);
+
+    if (!qTable[prevStateKey]) {
+      qTable[prevStateKey] = Array(9).fill(0);
+    }
+    if (!qTable[nextStateKey]) {
+      qTable[nextStateKey] = Array(9).fill(0);
+    }
+
+    const maxNextQValue = Math.max(...qTable[nextStateKey]);
+    qTable[prevStateKey][action] =
+      qTable[prevStateKey][action] +
+      alpha * (reward + gamma * maxNextQValue - qTable[prevStateKey][action]);
+  }
 
   function handleResultValidation() {
     let roundWon = false;
@@ -53,76 +105,19 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  function minimax(newBoard, player) {
-    const availSpots = newBoard.filter((s) => s === "");
-
-    if (checkWin(newBoard, "x")) {
-      return { score: -10 };
-    } else if (checkWin(newBoard, "o")) {
-      return { score: 10 };
-    } else if (availSpots.length === 0) {
-      return { score: 0 };
-    }
-
-    const moves = [];
-    for (let i = 0; i < availSpots.length; i++) {
-      const move = {};
-      move.index = newBoard.indexOf("");
-      newBoard[move.index] = player;
-
-      if (player === "o") {
-        const result = minimax(newBoard, "x");
-        move.score = result.score;
-      } else {
-        const result = minimax(newBoard, "o");
-        move.score = result.score;
-      }
-
-      newBoard[move.index] = "";
-      moves.push(move);
-    }
-
-    let bestMove;
-    if (player === "o") {
-      let bestScore = -10000;
-      for (let i = 0; i < moves.length; i++) {
-        if (moves[i].score > bestScore) {
-          bestScore = moves[i].score;
-          bestMove = i;
-        }
-      }
-    } else {
-      let bestScore = 10000;
-      for (let i = 0; i < moves.length; i++) {
-        if (moves[i].score < bestScore) {
-          bestScore = moves[i].score;
-          bestMove = i;
-        }
-      }
-    }
-
-    return moves[bestMove];
-  }
-
-  function checkWin(board, player) {
-    for (let i = 0; i < winningConditions.length; i++) {
-      const winCondition = winningConditions[i];
-      let a = board[winCondition[0]];
-      let b = board[winCondition[1]];
-      let c = board[winCondition[2]];
-      if (a === player && b === player && c === player) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   function aiMove() {
-    const bestSpot = minimax(boardState, "o").index;
+    const prevState = [...boardState];
+    const bestSpot = getBestMove(boardState, "o");
     handleCellClick(
       document.querySelector(`.cell[data-index="${bestSpot}"]`),
       bestSpot
     );
+    const reward = resultDisplay.innerText.includes("wins")
+      ? currentPlayer === "x"
+        ? -10
+        : 10
+      : 0;
+    updateQTable(prevState, bestSpot, reward, boardState);
   }
 
   function handleCellClick(clickedCell, index) {
@@ -155,6 +150,57 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  function trainAI(epochs) {
+    let trainingCount = 0;
+    function playGame() {
+      let state = ["", "", "", "", "", "", "", "", ""];
+      let player = "x";
+      while (true) {
+        const availableMoves = state
+          .map((s, i) => (s === "" ? i : null))
+          .filter((i) => i !== null);
+        if (availableMoves.length === 0) break;
+
+        let move;
+        if (player === "x") {
+          move =
+            availableMoves[Math.floor(Math.random() * availableMoves.length)]; // Random move
+        } else {
+          move = getBestMove(state, player);
+        }
+
+        state[move] = player;
+        if (checkWin(state, player)) {
+          updateQTable(state, move, player === "x" ? -10 : 10, state);
+          break;
+        }
+        player = player === "x" ? "o" : "x";
+      }
+      trainingCount++;
+      if (trainingCount < epochs) {
+        setTimeout(playGame, 10);
+      } else {
+        trainingMessage.innerText = "Training Complete! You can now play.";
+        epsilon = 0.1;
+      }
+    }
+    trainingMessage.innerText = "Training AI... Please wait.";
+    playGame();
+  }
+
+  function checkWin(board, player) {
+    for (let i = 0; i < winningConditions.length; i++) {
+      const winCondition = winningConditions[i];
+      let a = board[winCondition[0]];
+      let b = board[winCondition[1]];
+      let c = board[winCondition[2]];
+      if (a === player && b === player && c === player) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   cells.forEach((cell, index) => {
     cell.addEventListener("click", () => handleCellClick(cell, index));
   });
@@ -179,6 +225,7 @@ document.addEventListener("DOMContentLoaded", () => {
   playerVsAiButton.addEventListener("click", () => {
     isPlayerVsAI = true;
     restartButton.click();
+    trainAI(1000);
   });
 
   updateTurnBox();
